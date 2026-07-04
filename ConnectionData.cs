@@ -18,16 +18,16 @@ namespace Punto
         }
         public MySqlConnection getConection()
         {
-            try
+            try 
             {
                 MySqlConnection conexion = new MySqlConnection(cadena);
-                conexion.Open();
-                return conexion;
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Error al conectar a la base de datos: " + ex.Message);
-                return null;
+                conexion.Open(); 
+                return conexion; 
+            } 
+            catch (Exception ex) 
+            { 
+                MessageBox.Show("Error al conectar a la base de datos: " + ex.Message); 
+                return null; 
             }
 
         }
