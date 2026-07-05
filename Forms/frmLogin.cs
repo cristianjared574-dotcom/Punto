@@ -52,7 +52,7 @@ namespace Punto.Forms
                     string passwordBD = reader["password"].ToString();
 
                     //comparar contraseñas
-                    if(contrasena == passwordBD)
+                    if( contrasena == passwordBD ) 
                     {
                         MessageBox.Show("Acceso correcto...","Éxito",MessageBoxButtons.OK, MessageBoxIcon.Information);
                         reader.Close();
