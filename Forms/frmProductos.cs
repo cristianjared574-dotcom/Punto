@@ -275,5 +275,35 @@ namespace Punto.Forms
             }
         }
 
+        private void txtBusqueda_TextChanged(object sender, EventArgs e)
+        {
+            //conectamos con la base de datos
+            acesso_Datos = new ConnectionData();
+            MySqlConnection conexionDB = acesso_Datos.getConection();
+
+            //verificamos que la conexion sea correcta
+            if (conexionDB != null)
+            {
+                TextBox cuadroBusqueda = (TextBox)sender;
+
+                string consulta = "SELECT * FROM productos WHERE descripcion LIKE @busqueda";
+                MySqlDataAdapter adapter = new MySqlDataAdapter(consulta, conexionDB);
+
+                //agregamos el parametro
+                adapter.SelectCommand.Parameters.AddWithValue("@busqueda", "%" + cuadroBusqueda.Text + "%");
+                //creamos el DataTable
+                DataTable TablaDatos = new DataTable();
+                //llenamos el DataTable
+                adapter.Fill(TablaDatos);
+                //mostramos los datos
+                dgvProductos.DataSource = TablaDatos;
+
+                //ocultamos el ID
+                dgvProductos.Columns["producto_id"].Visible = false;
+
+                conexionDB.Close();
+            }
+
+        }
     }
 }
