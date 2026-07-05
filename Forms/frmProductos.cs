@@ -64,5 +64,115 @@ namespace Punto.Forms
             }
 
         }
+
+        private void btnNuevo_Click(object sender, EventArgs e)
+        {
+            //rescatamos valores
+            string codigo = txtCodigo.Text;
+            string descripcion = txtNombre.Text;
+            decimal precio;
+            int stock;
+            string categoria = cmbCategorias.Text;
+
+            //Validar que los campos obligatorios no estén vacíos
+            if (string.IsNullOrWhiteSpace(txtCodigo.Text))
+            {
+                MessageBox.Show("El código del producto es obligatorio.", "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                txtCodigo.Focus();
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(txtNombre.Text))
+            {
+                MessageBox.Show("La descripción del producto es obligatoria.", "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                txtNombre.Focus();
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(txtPrecio.Text))
+            {
+                MessageBox.Show("El precio es obligatorio.", "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                txtPrecio.Focus();
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(txtStock.Text))
+            {
+                MessageBox.Show("El stock es obligatorio.", "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                txtStock.Focus();
+                return;
+            }
+            if (string.IsNullOrWhiteSpace(cmbCategorias.Text))
+            {
+                MessageBox.Show("La categoría es obligatoria.", "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                cmbCategorias.Focus();
+                return;
+            }
+
+            //Validar precio y stock
+            if (!decimal.TryParse(txtPrecio.Text, out precio))
+            {
+                MessageBox.Show("Ingrese un precio válido.", "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                txtPrecio.Focus();
+                return;
+            }
+
+            if (!int.TryParse(txtStock.Text, out stock))
+            {
+                MessageBox.Show("Ingrese un stock válido.", "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                txtStock.Focus();
+                return;
+            }
+
+            //Conectar a la base de datos
+            acesso_Datos = new ConnectionData();
+            MySqlConnection conexionDB = acesso_Datos.getConection();
+
+            if (conexionDB == null)
+            {
+                MessageBox.Show("No fue posible conectar con la base de datos.");
+                return;
+            }
+
+            //Crear la consulta
+            string consulta = "INSERT INTO productos (codigo, descripcion, precio, stock, categoria) " + "VALUES (@codigo, @descripcion, @precio, @stock, @categoria)";
+
+            //Crear el comando
+            MySqlCommand comando = new MySqlCommand(consulta, conexionDB);
+
+            comando.Parameters.AddWithValue("@codigo", codigo);
+            comando.Parameters.AddWithValue("@descripcion", descripcion);
+            comando.Parameters.AddWithValue("@precio", precio);
+            comando.Parameters.AddWithValue("@stock", stock);
+            comando.Parameters.AddWithValue("@categoria", categoria);
+
+            //Ejecutar la consulta
+            int filasAfectadas = comando.ExecuteNonQuery();
+            conexionDB.Close();
+
+            //Verificar el registro
+            if (filasAfectadas > 0)
+            {
+                MessageBox.Show("Producto registrado correctamente.");
+                cargaDatos();
+                LimpiarFormulario();
+            }
+            else
+            {
+                MessageBox.Show("No fue posible registrar el producto.");
+            }
+
+        }
+
+        private void LimpiarFormulario()
+        {
+            lblId.Text = "";
+            txtCodigo.Clear();
+            txtNombre.Clear();
+            txtPrecio.Clear();
+            txtStock.Clear();
+            cmbCategorias.SelectedIndex = -1;
+        }
+
     }
 }
