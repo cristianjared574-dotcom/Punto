@@ -174,5 +174,58 @@ namespace Punto.Forms
             cmbCategorias.SelectedIndex = -1;
         }
 
+        private void btnEditar_Click(object sender, EventArgs e)
+        {
+            //rescatamos valores
+            int ID = int.Parse(lblId.Text);
+            string codigo = txtCodigo.Text;
+            string descripcion = txtNombre.Text;
+            decimal precio;
+            int stock;
+            string categoria = cmbCategorias.Text;
+
+            if (!decimal.TryParse(txtPrecio.Text, out precio) || !int.TryParse(txtStock.Text, out stock))
+            {
+                MessageBox.Show("Ingrese un precio y un stock válidos.");
+                return;
+            }
+            //conexio a base de datos
+            acesso_Datos = new ConnectionData();
+            MySqlConnection conexionDB = acesso_Datos.getConection();
+
+            //verificamos que la conexion sea correcta
+            if (conexionDB != null)
+            {
+                //creamos la consulta
+                string consulta = "UPDATE productos SET codigo = @codigo, descripcion = @descripcion, precio = @precio, stock = @stock, categoria = @categoria WHERE producto_id = @producto_id";
+                //creamos el comando
+                MySqlCommand comando = new MySqlCommand(consulta, conexionDB);
+                //agregamos los parametros
+                comando.Parameters.AddWithValue("@producto_id", ID);
+                comando.Parameters.AddWithValue("@codigo", codigo);
+                comando.Parameters.AddWithValue("@descripcion", descripcion);
+                comando.Parameters.AddWithValue("@precio", precio);
+                comando.Parameters.AddWithValue("@stock", stock);
+                comando.Parameters.AddWithValue("@categoria", categoria);
+
+                //ejecutamos el comando
+                int filasAfectadas = comando.ExecuteNonQuery();
+                conexionDB.Close();
+
+                //verificamos que se haya ejecutado correctamente
+                if (filasAfectadas > 0)
+                {
+                    MessageBox.Show("Producto actualizado correctamente");
+                    cargaDatos();
+                    LimpiarFormulario();
+                }
+                else
+                {
+                    MessageBox.Show("Error al actualizar el producto");
+                }
+
+            }
+
+        }
     }
 }
