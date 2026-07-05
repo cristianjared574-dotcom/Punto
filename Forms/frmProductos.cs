@@ -226,6 +226,54 @@ namespace Punto.Forms
 
             }
 
+
         }
+
+        private void btnEliminar_Click(object sender, EventArgs e)
+        {
+            //rescatamos valores
+            int IDproducto = int.Parse(lblId.Text);
+            string descripcion = txtNombre.Text;
+
+            //preguntamos al usuario si desea eliminar el producto
+            DialogResult respuesta = MessageBox.Show($"¿Está seguro de eliminar el producto '{descripcion}'?", "Confirmar eliminación", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+
+            if (respuesta == DialogResult.No)
+            {
+                return;
+            }
+
+            //conexio a base de datos
+            acesso_Datos = new ConnectionData();
+            MySqlConnection conexionDB = acesso_Datos.getConection();
+
+            //verificamos que la conexion sea correcta
+            if (conexionDB != null)
+            {
+                //creamos la consulta
+                string consulta = "DELETE FROM productos WHERE producto_id = @producto_id";
+                //creamos el comando
+                MySqlCommand comando = new MySqlCommand(consulta, conexionDB);
+                //agregamos los parametros
+                comando.Parameters.AddWithValue("@producto_id", IDproducto);
+
+                //ejecutamos el comando
+                int filasAfectadas = comando.ExecuteNonQuery();
+                conexionDB.Close();
+
+                //verificamos que se haya ejecutado correctamente
+                if (filasAfectadas > 0)
+                {
+                    MessageBox.Show("Producto eliminado correctamente");
+                    cargaDatos();
+                    LimpiarFormulario();
+                }
+                else
+                {
+                    MessageBox.Show("Error al eliminar el producto");
+                }
+            }
+        }
+
     }
 }
