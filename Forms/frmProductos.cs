@@ -48,5 +48,21 @@ namespace Punto.Forms
         {
             cargaDatos();
         }
+
+        private void dgvProductos_CellEnter(object sender, DataGridViewCellEventArgs e)
+        {
+            //verificamos que este seleccionada una celda
+            if (e.RowIndex >= 0)
+            {
+                DataGridViewRow row = dgvProductos.Rows[e.RowIndex];
+                lblId.Text = row.Cells[0].Value.ToString();
+                txtCodigo.Text = row.Cells[1].Value.ToString();
+                txtNombre.Text = row.Cells[2].Value.ToString();
+                txtPrecio.Text = row.Cells[3].Value.ToString();
+                txtStock.Text = row.Cells[4].Value.ToString();
+                cmbCategorias.Text = row.Cells[5].Value.ToString();
+            }
+
+        }
     }
 }
